@@ -15,16 +15,16 @@ namespace QDP
     _fp = std::fopen(file, "w");
     if (_fp == NULL)
       QDP_error_exit("failed to open \"%s\" for writing\n", file);
-    
+
     _w = limeCreateWriter(_fp);
-    
-    _recordName   = string("");
+
+    _recordName   = std::string("");
     _recordSize   = 0;
     _recordMBFlag = 0;
     _recordMEFlag = 0;
-    
+
     _state = stateInit;
-    
+
   }
 
 
@@ -49,7 +49,7 @@ namespace QDP
     if (_state != stateInit)
       QDP_error_exit("Writing record data not completed\n");
 
-    _recordName = string(name);
+    _recordName = std::string(name);
 
     _state = stateHdr;
   }
@@ -100,7 +100,7 @@ namespace QDP
     if (_state != stateInit)
       QDP_error_exit("Writing record data not completed\n");
 
-    _recordName   = string(name);
+    _recordName   = std::string(name);
     _recordSize   = size;
     _recordMBFlag = mBFlag;
     _recordMEFlag = mEFlag;
@@ -161,7 +161,7 @@ namespace QDP
     if (_fp == NULL) {
       QDP_error_exit("failed to open \"%s\" for reading\n", file);
     }
-    
+
     _r = limeCreateReader(_fp);
 
     // Jump to first record
@@ -193,7 +193,7 @@ const char* QLimeReader::recordName(void) const
   }
 
   return name;
-}	
+}
 
 
 //--------------------------------------------------------------------------------------------------
@@ -247,4 +247,3 @@ QLimeReturn QLimeReader::nextRecord(void) const
 
 
 }
-

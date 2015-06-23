@@ -46,7 +46,7 @@ namespace QDP
 
     State		_state;			//!< Current state
 
-    string		_recordName;		//!< Record name
+	std::string		_recordName;		//!< Record name
     uint64_t		_recordSize;		//!< Record size
     int			_recordMBFlag;		//!< Message begin flag
     int			_recordMEFlag;		//!< Message end flag
@@ -56,7 +56,7 @@ namespace QDP
   public:
     QLimeWriter(const char*);
     ~QLimeWriter();
-    
+
     void setRecordName(const char*);
     void setRecordSize(uint64_t);
     void setRecordMBFlag(int);
@@ -67,7 +67,7 @@ namespace QDP
 
     void endRecord(void) { _state = stateInit; }
 
-    const string& recordName(void) const { return _recordName; }
+    const std::string& recordName(void) const { return _recordName; }
     const int recordSize(void) const { return _recordSize; }
   };
 
