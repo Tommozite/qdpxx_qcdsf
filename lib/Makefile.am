@@ -21,7 +21,7 @@ lib_LIBRARIES = libqdp.a
 ## Base set of sources and conditionally included sources
 libqdp_a_SOURCES = qdp_map.cc qdp_subset.cc qdp_random.cc \
 	qdp_layout.cc qdp_io.cc qdp_byteorder.cc qdp_util.cc \
-	qdp_stdio.cc \
+	qdp_stdio.cc  qdp_qlimewriter.cc \
         qdp_profile.cc qdp_strnlen.cc qdp_crc32.cc \
         qdp_stopwatch.cc \
         qdp_rannyu.cc
@@ -34,7 +34,7 @@ if QDP_USE_HDF5
 libqdp_a_SOURCES += qdp_hdf5.cc
 endif
 
-# Scalar	
+# Scalar
 if ARCH_SCALAR
 libqdp_a_SOURCES += qdp_scalar_init.cc qdp_scalar_layout.cc \
 	qdp_scalar_specific.cc qdp_scalarsite_specific.cc
@@ -86,10 +86,10 @@ endif
 if QDP_USE_SCALARVEC_SSE
 libqdp_a_SOURCES += qdp_scalarvecsite_sse.cc
 endif
- 
+
 if BUILD_DEFAULT_ALLOCATOR
 libqdp_a_SOURCES += qdp_default_allocator.cc
-endif 
+endif
 
 if BUILD_BGQ_THREADBIND
 libqdp_a_SOURCES += qdp_bgq_threadbind.cc

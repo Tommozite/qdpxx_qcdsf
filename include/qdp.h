@@ -11,7 +11,7 @@
  * \section Description
  *
  * QDP is a C++ data-parallel interface for Lattice field theory.
- * The QDP interface provides an environment somewhat similar to 
+ * The QDP interface provides an environment somewhat similar to
  * Fortran 90 - namely data-parallel operations (operator/infix form)
  * which can be applied on lattice wide objects. The interface provides a
  * level of abstraction such that high-level user code written using the
@@ -48,7 +48,7 @@
 #define QDP_ALIGN8   __attribute__ ((aligned (8)))
 #define QDP_ALIGN16  __attribute__ ((aligned (16)))
 #define QDP_INLINE   __attribute__ ((always_inline))
-// The attributes in QDP_CONST is buggering g++-3.4 
+// The attributes in QDP_CONST is buggering g++-3.4
 //#define QDP_CONST    __attribute__ ((const,pure))
 #define QDP_CONST
 #define QDP_CINLINE  __attribute__ ((always_inline,const,pure))
@@ -108,6 +108,7 @@ namespace QDP {
 #include "qdp_params.h"
 #include "qdp_layout.h"
 #include "qdp_io.h"
+#include "qdp_qlimewriter.h"
 #include "qdp_stdio.h"
 
 #ifndef QDP_USE_LIBXML2
@@ -161,8 +162,8 @@ namespace QDP {
 // Include threading code here if applicable
 #include "qdp_dispatch.h"
 
-namespace ThreadReductions { 
- 
+namespace ThreadReductions {
+
 }
 
 #if defined(ARCH_SCALAR)
@@ -195,19 +196,19 @@ namespace ThreadReductions {
 #if QDP_USE_SSE == 1
 #include "qdp_scalarsite_sse.h"
 #elif QDP_USE_BAGEL_QDP == 1
-// Use BAGEL_QDP 
+// Use BAGEL_QDP
 #include "qdp_scalarsite_bagel_qdp.h"
 #else
 // Use generics
 #ifdef QDP_USE_GENERIC_OPTS
 #include "qdp_scalarsite_generic.h"
-#else 
+#else
 #warning "Not using generics"
 #endif
 #endif
 
 #elif defined(ARCH_SCALARVEC)
-// Architectural specific code to a single node/single proc box 
+// Architectural specific code to a single node/single proc box
 // with vector extension
 #warning "Using scalar architecture with vector extensions"
 #include "qdp_scalarvec_specific.h"
