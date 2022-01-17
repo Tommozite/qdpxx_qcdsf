@@ -1,8 +1,8 @@
 #ifndef QDP_GENERIC_FUSED_SPIN_RECON_EVALUATES_H
 #define QDP_GENERIC_FUSED_SPIN_RECON_EVALUATES_H
 
-namespace QDP {
-
+namespace QDP
+{
 
 ////////////////////////////////
 // Threading evaluates
@@ -13,36 +13,33 @@ namespace QDP {
 // the wrappers for the functions to be threaded
 #include "qdp_generic_fused_spin_recon_evaluates_wrapper.h"
 
+    // Vec = SpinReconstructDir0Plus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir0PlusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
-// Vec = SpinReconstructDir0Plus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir0PlusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+        if (s.hasOrderedRep())
+        {
+            int totalSize = s.end() - s.start() + 1;
 
-  if( s.hasOrderedRep() ) { 
-    int totalSize = s.end() - s.start() +1;
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir0Plus};
 
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir0Plus};
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /* 
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
     for(int site = s.start(); site <= s.end(); site++) {
       
       HVec tmp;
@@ -55,22 +52,22 @@ void evaluate(OLattice< FVec >& d,
 			       1);
       
      }*/
+        }
+        else
+        {
 
-  }
-  else { 
+            const int *tab = s.siteTable().slice();
 
-    const int *tab = s.siteTable().slice();
+            int totalSize = s.numSiteTable();
 
-    int totalSize = s.numSiteTable();
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir0Plus};
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir0Plus};
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -83,39 +80,36 @@ void evaluate(OLattice< FVec >& d,
 			       (REAL *)&(d.elem(site).elem(0).elem(0).real()),
 			       1);      
     }*/
-  }
-}
+        }
+    }
 
-// Vec = SpinReconstructDir0Minus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir0MinusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+    // Vec = SpinReconstructDir0Minus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir0MinusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
+        if (s.hasOrderedRep())
+        {
+            int totalSize = s.end() - s.start() + 1;
 
-  if( s.hasOrderedRep() ) { 
-    int totalSize = s.end() - s.start() +1;
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir0Minus};
 
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir0Minus};
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /* 
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
     for(int site = s.start(); site <= s.end(); site++) {
  
       HVec tmp;
@@ -128,21 +122,21 @@ void evaluate(OLattice< FVec >& d,
 				1);
    
 				}*/
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
 
-  }
-  else { 
-    const int *tab = s.siteTable().slice();
+            int totalSize = s.numSiteTable();
 
-    int totalSize = s.numSiteTable();
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir0Minus};
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir0Minus};
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -158,42 +152,37 @@ void evaluate(OLattice< FVec >& d,
 
       
 				}*/
-  }
+        }
+    }
 
-}
+    // Vec = SpinReconstructDir1Plus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir1PlusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
+        if (s.hasOrderedRep())
+        {
 
+            int totalSize = s.end() - s.start() + 1;
 
-// Vec = SpinReconstructDir1Plus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir1PlusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir1Plus};
 
-  if( s.hasOrderedRep() ) { 
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    int totalSize = s.end() - s.start() +1;
-
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir1Plus};
-
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /* 
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
     for(int site = s.start(); site <= s.end(); site++) {
       HVec tmp;
       _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
@@ -205,22 +194,22 @@ void evaluate(OLattice< FVec >& d,
 			       1);
  
 			       }*/
+        }
+        else
+        {
 
-  }
-  else { 
+            const int *tab = s.siteTable().slice();
 
-    const int *tab = s.siteTable().slice();
+            int totalSize = s.numSiteTable();
 
-    int totalSize = s.numSiteTable();
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir1Plus};
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir1Plus};
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -235,39 +224,37 @@ void evaluate(OLattice< FVec >& d,
       
       
 			       }*/
-  }
-}
+        }
+    }
 
-// Vec = SpinReconstructDir1Minus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir1MinusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+    // Vec = SpinReconstructDir1Minus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir1MinusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
-  if( s.hasOrderedRep() ) { 
+        if (s.hasOrderedRep())
+        {
 
-    int totalSize = s.end() - s.start() +1;
+            int totalSize = s.end() - s.start() + 1;
 
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir1Minus};
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir1Minus};
 
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /* 
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
     for(int site = s.start(); site <= s.end(); site++) {
       HVec tmp;
       _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
@@ -279,22 +266,22 @@ void evaluate(OLattice< FVec >& d,
 				1);
       
 				}*/
-    
-  }
-  else { 
+        }
+        else
+        {
 
-    const int *tab = s.siteTable().slice();
+            const int *tab = s.siteTable().slice();
 
-    int totalSize = s.numSiteTable();
+            int totalSize = s.numSiteTable();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir1Minus};
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir1Minus};
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -309,42 +296,37 @@ void evaluate(OLattice< FVec >& d,
       
       
 				}*/
-  }
-}
+        }
+    }
 
+    // Vec = SpinReconstructDir2Plus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir2PlusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
+        if (s.hasOrderedRep())
+        {
 
-// Vec = SpinReconstructDir2Plus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir2PlusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+            int totalSize = s.end() - s.start() + 1;
 
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir2Plus};
 
-  if( s.hasOrderedRep() ) { 
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    int totalSize = s.end() - s.start() +1;
-
-    ordered_fused_spin_recon_user_arg arg = {u, a, d,  s.start(),inlineSpinReconDir2Plus};
-
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /* 
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
     for(int site = s.start(); site <= s.end(); site++) {
       HVec tmp;
       _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
@@ -356,22 +338,22 @@ void evaluate(OLattice< FVec >& d,
 			       1);
       
 			       }*/
-    
-  }
-  else { 
+        }
+        else
+        {
 
-    const int *tab = s.siteTable().slice();
+            const int *tab = s.siteTable().slice();
 
-    int totalSize = s.numSiteTable();
+            int totalSize = s.numSiteTable();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir2Plus};
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir2Plus};
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
            
@@ -386,40 +368,37 @@ void evaluate(OLattice< FVec >& d,
       
       
 			       }*/
-  }
-}
+        }
+    }
 
-// Vec = SpinReconstructDir2Minus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir2MinusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+    // Vec = SpinReconstructDir2Minus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir2MinusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
+        if (s.hasOrderedRep())
+        {
 
-  if( s.hasOrderedRep() ) { 
+            int totalSize = s.end() - s.start() + 1;
 
-    int totalSize = s.end() - s.start() +1;
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir2Minus};
 
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir2Minus};
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /* 
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
     for(int site = s.start(); site <= s.end(); site++) {
       HVec tmp;
       _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
@@ -430,22 +409,22 @@ void evaluate(OLattice< FVec >& d,
 				(REAL *)&(d.elem(site).elem(0).elem(0).real()),
 				1);
 				}*/
-    
-  }
-  else { 
+        }
+        else
+        {
 
-    const int *tab = s.siteTable().slice();
+            const int *tab = s.siteTable().slice();
 
-    int totalSize = s.numSiteTable();
+            int totalSize = s.numSiteTable();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir2Minus};
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir2Minus};
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -460,42 +439,37 @@ void evaluate(OLattice< FVec >& d,
 
  
 				}*/
-  }
-}
+        }
+    }
 
+    // Vec = SpinReconstructDir3Plus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir3PlusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
+        if (s.hasOrderedRep())
+        {
 
-// Vec = SpinReconstructDir3Plus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir3PlusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+            int totalSize = s.end() - s.start() + 1;
 
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir3Plus};
 
-  if( s.hasOrderedRep() ) { 
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    int totalSize = s.end() - s.start() +1;
-
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir3Plus};
-
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /* 
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
     for(int site = s.start(); site <= s.end(); site++) {
       HVec tmp;
       _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
@@ -507,22 +481,22 @@ void evaluate(OLattice< FVec >& d,
 			       1);
 
 			       }*/
-    
-  }
-  else { 
+        }
+        else
+        {
 
-    const int *tab = s.siteTable().slice();
+            const int *tab = s.siteTable().slice();
 
-    int totalSize = s.numSiteTable();
+            int totalSize = s.numSiteTable();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir3Plus};
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir3Plus};
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -537,40 +511,37 @@ void evaluate(OLattice< FVec >& d,
       
       
 			       }*/
-  }
+        }
+    }
 
-}
+    // Vec = SpinReconstructDir3Minus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir3MinusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
-// Vec = SpinReconstructDir3Minus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir3MinusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+        if (s.hasOrderedRep())
+        {
 
-  if( s.hasOrderedRep() ) { 
+            int totalSize = s.end() - s.start() + 1;
 
-    int totalSize = s.end() - s.start() +1;
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir3Minus};
 
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir3Minus};
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /* 
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
     for(int site = s.start(); site <= s.end(); site++) {
 
       HVec tmp;
@@ -581,21 +552,22 @@ void evaluate(OLattice< FVec >& d,
 				1);
 
 				}*/
-  }
-  else { 
-    
-    const int *tab = s.siteTable().slice();
+        }
+        else
+        {
 
-    int totalSize = s.numSiteTable();
+            const int *tab = s.siteTable().slice();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir3Minus};
+            int totalSize = s.numSiteTable();
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir3Minus};
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -608,42 +580,37 @@ void evaluate(OLattice< FVec >& d,
 
       
 				}*/
-  }
+        }
+    }
 
-}
+    // Vec += SpinReconstructDir0Plus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir0PlusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
+        if (s.hasOrderedRep())
+        {
 
+            int totalSize = s.end() - s.start() + 1;
 
-// Vec += SpinReconstructDir0Plus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAddAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir0PlusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir0Plus};
 
-  if( s.hasOrderedRep() ) { 
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    int totalSize = s.end() - s.start() +1;
-
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(),  inlineAddSpinReconDir0Plus};
-
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /* 
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
     for(int site = s.start(); site <= s.end(); site++) {
       
       HVec tmp;
@@ -657,21 +624,22 @@ void evaluate(OLattice< FVec >& d,
    
    
 				  }*/
-  }
-  else { 
+        }
+        else
+        {
 
-    const int *tab = s.siteTable().slice();
+            const int *tab = s.siteTable().slice();
 
-    int totalSize = s.numSiteTable();
+            int totalSize = s.numSiteTable();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab,  inlineAddSpinReconDir0Plus};
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir0Plus};
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -686,39 +654,37 @@ void evaluate(OLattice< FVec >& d,
       
  
 				  }*/
-  }
-}
+        }
+    }
 
-// Vec += SpinReconstructDir0Minus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAddAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir0MinusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+    // Vec += SpinReconstructDir0Minus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir0MinusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
-  if( s.hasOrderedRep() ) { 
+        if (s.hasOrderedRep())
+        {
 
-    int totalSize = s.end() - s.start() +1;
+            int totalSize = s.end() - s.start() + 1;
 
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir0Minus};
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir0Minus};
 
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /* 
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
     for(int site = s.start(); site <= s.end(); site++) {
       HVec tmp;
       _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
@@ -732,21 +698,22 @@ void evaluate(OLattice< FVec >& d,
    
    
 				   }*/
-  }
-  else { 
+        }
+        else
+        {
 
-    const int *tab = s.siteTable().slice();
+            const int *tab = s.siteTable().slice();
 
-    int totalSize = s.numSiteTable();
+            int totalSize = s.numSiteTable();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir0Minus};
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir0Minus};
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -761,43 +728,37 @@ void evaluate(OLattice< FVec >& d,
 
       
 				   }*/
-  }
+        }
+    }
 
-}
+    // Vec += SpinReconstructDir1Plus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir1PlusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
+        if (s.hasOrderedRep())
+        {
 
+            int totalSize = s.end() - s.start() + 1;
 
-// Vec += SpinReconstructDir1Plus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAddAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir1PlusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir1Plus};
 
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-  if( s.hasOrderedRep() ) { 
-
-    int totalSize = s.end() - s.start() +1;
-
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir1Plus};
-
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /* 
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
     for(int site = s.start(); site <= s.end(); site++) {
   
       HVec tmp;
@@ -810,20 +771,21 @@ void evaluate(OLattice< FVec >& d,
 				  1);
    
 				  }*/
-  }
-  else { 
-    const int *tab = s.siteTable().slice();
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
 
-    int totalSize = s.numSiteTable();
+            int totalSize = s.numSiteTable();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir1Plus};
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir1Plus};
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -838,39 +800,36 @@ void evaluate(OLattice< FVec >& d,
       
       
 				  }*/
-  }
+        }
+    }
 
-}
+    // Vec += SpinReconstructDir1Minus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir1MinusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
-// Vec += SpinReconstructDir1Minus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAddAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir1MinusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+        if (s.hasOrderedRep())
+        {
+            int totalSize = s.end() - s.start() + 1;
 
-  if( s.hasOrderedRep() ) { 
-    int totalSize = s.end() - s.start() +1;
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir1Minus};
 
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir1Minus};
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int site = s.start(); site <= s.end(); site++) {
       HVec tmp;
       _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
@@ -883,20 +842,21 @@ void evaluate(OLattice< FVec >& d,
 
   
 				   }*/
-  }
-  else { 
-    const int *tab = s.siteTable().slice();
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
 
-    int totalSize = s.numSiteTable();
+            int totalSize = s.numSiteTable();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir1Minus};
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir1Minus};
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -912,42 +872,36 @@ void evaluate(OLattice< FVec >& d,
 
  
 				   }*/
-  }
+        }
+    }
 
-}
+    // Vec += SpinReconstructDir2Plus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir2PlusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
+        if (s.hasOrderedRep())
+        {
+            int totalSize = s.end() - s.start() + 1;
 
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir2Plus};
 
-// Vec += SpinReconstructDir2Plus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAddAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir2PlusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-
-  if( s.hasOrderedRep() ) { 
-    int totalSize = s.end() - s.start() +1;
-
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir2Plus};
-
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int site = s.start(); site <= s.end(); site++) {
       HVec tmp;
       _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
@@ -958,20 +912,21 @@ void evaluate(OLattice< FVec >& d,
 				  (REAL *)&(d.elem(site).elem(0).elem(0).real()),
 				  1);
 				  }*/
-  }
-  else { 
-    const int *tab = s.siteTable().slice();
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
 
-    int totalSize = s.numSiteTable();
+            int totalSize = s.numSiteTable();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir2Plus};
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir2Plus};
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -986,39 +941,37 @@ void evaluate(OLattice< FVec >& d,
       
       
 				  }*/
-  }
-}
+        }
+    }
 
-// Vec += SpinReconstructDir2Minus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAddAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir2MinusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+    // Vec += SpinReconstructDir2Minus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir2MinusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
-  if( s.hasOrderedRep() ) { 
+        if (s.hasOrderedRep())
+        {
 
-    int totalSize = s.end() - s.start() +1;
+            int totalSize = s.end() - s.start() + 1;
 
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir2Minus};
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir2Minus};
 
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int site = s.start(); site <= s.end(); site++) {
       HVec tmp;
       _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
@@ -1029,20 +982,21 @@ void evaluate(OLattice< FVec >& d,
 				   (REAL *)&(d.elem(site).elem(0).elem(0).real()),
 				   1);
 				   }*/
-  }
-  else { 
-    const int *tab = s.siteTable().slice();
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
 
-    int totalSize = s.numSiteTable();
+            int totalSize = s.numSiteTable();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir2Minus};
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir2Minus};
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -1057,42 +1011,37 @@ void evaluate(OLattice< FVec >& d,
       
       
 				   }*/
-  }
+        }
+    }
 
-}
+    // Vec += SpinReconstructDir3Plus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir3PlusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
+        if (s.hasOrderedRep())
+        {
 
+            int totalSize = s.end() - s.start() + 1;
 
-// Vec += SpinReconstructDir3Plus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAddAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir3PlusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir3Plus};
 
-  if( s.hasOrderedRep() ) { 
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    int totalSize = s.end() - s.start() +1;
-
-    ordered_fused_spin_recon_user_arg arg = {u, a, d,  s.start(),inlineAddSpinReconDir3Plus};
-
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
-
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int site = s.start(); site <= s.end(); site++) {
       HVec tmp;
       _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
@@ -1104,20 +1053,21 @@ void evaluate(OLattice< FVec >& d,
 				  1);
    
 				  } */
-  }
-  else {
-    const int *tab = s.siteTable().slice();
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
 
-    int totalSize = s.numSiteTable();
+            int totalSize = s.numSiteTable();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir3Plus};
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir3Plus};
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -1131,39 +1081,36 @@ void evaluate(OLattice< FVec >& d,
 				  (REAL *)&(d.elem(site).elem(0).elem(0).real()),
 				  1);
 				  }*/
-  }
- 
-}
+        }
+    }
 
-// Vec += SpinReconstructDir3Minus( u * psi);
-template<>
-inline
-void evaluate(OLattice< FVec >& d,
-              const OpAddAssign& op,
-              const QDPExpr<
-	              BinaryNode< 
-	                FnSReconDir3MinusProd,
-	                Reference< QDPType< SU3Mat, OLattice< SU3Mat > > >,
-	                Reference< QDPType< HVec,   OLattice< HVec > > >
-                      >,
-	              OLattice< FVec > 
-                    >&rhs,
-	      const Subset& s)
-{
-  const OLattice< SU3Mat >& u = static_cast< const OLattice< SU3Mat >& >(rhs.expression().left());
-  const OLattice< HVec >& a = static_cast< const OLattice< HVec >& >(rhs.expression().right());
+    // Vec += SpinReconstructDir3Minus( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir3MinusProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<HVec, OLattice<HVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<HVec> &a = static_cast<const OLattice<HVec> &>(rhs.expression().right());
 
-  if( s.hasOrderedRep() ) { 
-    int totalSize = s.end() - s.start() +1;
+        if (s.hasOrderedRep())
+        {
+            int totalSize = s.end() - s.start() + 1;
 
-    ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir3Minus};
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir3Minus};
 
-    dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int site = s.start(); site <= s.end(); site++) {
     HVec tmp;
       _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
@@ -1175,20 +1122,21 @@ void evaluate(OLattice< FVec >& d,
 				   1);
     
 				   } */
-  }
-  else {
-    const int *tab = s.siteTable().slice();
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
 
-    int totalSize = s.numSiteTable();
+            int totalSize = s.numSiteTable();
 
-    unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir3Minus};
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir3Minus};
 
-    dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
 
-    ///////////////////
-    // Original code
-    ////////////////////
-    /*
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
     for(int j=0; j < s.numSiteTable(); j++) { 
       int site = tab[j];
       
@@ -1202,16 +1150,1176 @@ void evaluate(OLattice< FVec >& d,
 				   1);
 
 				   }*/
-  }
+        }
+    }
 
-}
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    // Vec = SpinReconstructDir0PlusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir0PlusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
 
+        if (s.hasOrderedRep())
+        {
+            int totalSize = s.end() - s.start() + 1;
 
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir0PlusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
+    for(int site = s.start(); site <= s.end(); site++) {
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir0PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+			       (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+			       1);
+      
+     }*/
+        }
+        else
+        {
+
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir0PlusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir0PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+			       (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+			       1);      
+    }*/
+        }
+    }
+
+    // Vec = SpinReconstructDir0MinusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir0MinusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir0MinusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
+    for(int site = s.start(); site <= s.end(); site++) {
+ 
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir0MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				(REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				1);
+   
+				}*/
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir0MinusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir0MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				(REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				1);
+
+      
+				}*/
+        }
+    }
+
+    // Vec = SpinReconstructDir1PlusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir1PlusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir1PlusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
+    for(int site = s.start(); site <= s.end(); site++) {
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir1PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+			       (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+			       1);
+ 
+			       }*/
+        }
+        else
+        {
+
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir1PlusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir1PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+			       (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+			       1);
+      
+      
+			       }*/
+        }
+    }
+
+    // Vec = SpinReconstructDir1MinusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir1MinusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir1MinusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
+    for(int site = s.start(); site <= s.end(); site++) {
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir1MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				(REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				1);
+      
+				}*/
+        }
+        else
+        {
+
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir1MinusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir1MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				(REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				1);
+      
+      
+				}*/
+        }
+    }
+
+    // Vec = SpinReconstructDir2PlusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir2PlusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir2PlusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
+    for(int site = s.start(); site <= s.end(); site++) {
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir2PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+			       (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+			       1);
+      
+			       }*/
+        }
+        else
+        {
+
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir2PlusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+           
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir2PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+			       (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+			       1);
+      
+      
+			       }*/
+        }
+    }
+
+    // Vec = SpinReconstructDir2MinusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir2MinusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir2MinusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
+    for(int site = s.start(); site <= s.end(); site++) {
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir2MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				(REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				1);
+				}*/
+        }
+        else
+        {
+
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir2MinusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir2MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				(REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				1);
+
+ 
+				}*/
+        }
+    }
+
+    // Vec = SpinReconstructDir3PlusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir3PlusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir3PlusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
+    for(int site = s.start(); site <= s.end(); site++) {
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir3PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+			       (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+			       1);
+
+			       }*/
+        }
+        else
+        {
+
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir3PlusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineSpinReconDir3PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+			       (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+			       1);
+      
+      
+			       }*/
+        }
+    }
+
+    // Vec = SpinReconstructDir3MinusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir3MinusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineSpinReconDir3MinusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
+    for(int site = s.start(); site <= s.end(); site++) {
+
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      inlineSpinReconDir3MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				(REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				1);
+
+				}*/
+        }
+        else
+        {
+
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineSpinReconDir3MinusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      inlineSpinReconDir3MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				(REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				1);
+
+      
+				}*/
+        }
+    }
+
+    // Vec += SpinReconstructDir0PlusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir0PlusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir0PlusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
+    for(int site = s.start(); site <= s.end(); site++) {
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir0PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				  (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				  1);
+   
+   
+				  }*/
+        }
+        else
+        {
+
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir0PlusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir0PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				  (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				  1);
+      
+ 
+				  }*/
+        }
+    }
+
+    // Vec += SpinReconstructDir0MinusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir0MinusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir0MinusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
+    for(int site = s.start(); site <= s.end(); site++) {
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir0MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				   (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				   1);
+      
+   
+   
+				   }*/
+        }
+        else
+        {
+
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir0MinusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir0MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				   (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				   1);
+
+      
+				   }*/
+        }
+    }
+
+    // Vec += SpinReconstructDir1PlusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir1PlusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir1PlusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /* 
+    for(int site = s.start(); site <= s.end(); site++) {
+  
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+
+      inlineAddSpinReconDir1PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				  (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				  1);
+   
+				  }*/
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir1PlusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+
+      inlineAddSpinReconDir1PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				  (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				  1);
+      
+      
+				  }*/
+        }
+    }
+
+    // Vec += SpinReconstructDir1MinusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir1MinusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir1MinusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int site = s.start(); site <= s.end(); site++) {
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir1MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				   (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				   1);
+
+  
+				   }*/
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir1MinusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir1MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				   (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				   1);
+
+ 
+				   }*/
+        }
+    }
+
+    // Vec += SpinReconstructDir2PlusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir2PlusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir2PlusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int site = s.start(); site <= s.end(); site++) {
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir2PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				  (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				  1);
+				  }*/
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir2PlusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir2PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				  (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				  1);
+      
+      
+				  }*/
+        }
+    }
+
+    // Vec += SpinReconstructDir2MinusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir2MinusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir2MinusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int site = s.start(); site <= s.end(); site++) {
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir2MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				   (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				   1);
+				   }*/
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir2MinusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir2MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				   (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				   1);
+      
+      
+				   }*/
+        }
+    }
+
+    // Vec += SpinReconstructDir3PlusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir3PlusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir3PlusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int site = s.start(); site <= s.end(); site++) {
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir3PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				  (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				  1);
+   
+				  } */
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir3PlusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir3PlusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				  (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				  1);
+				  }*/
+        }
+    }
+
+    // Vec += SpinReconstructDir3MinusFull( u * psi);
+    template <>
+    inline void evaluate(OLattice<FVec> &d,
+                         const OpAddAssign &op,
+                         const QDPExpr<
+                             BinaryNode<
+                                 FnSReconDir3MinusFullProd,
+                                 Reference<QDPType<SU3Mat, OLattice<SU3Mat>>>,
+                                 Reference<QDPType<FVec, OLattice<FVec>>>>,
+                             OLattice<FVec>> &rhs,
+                         const Subset &s)
+    {
+        const OLattice<SU3Mat> &u = static_cast<const OLattice<SU3Mat> &>(rhs.expression().left());
+        const OLattice<FVec> &a = static_cast<const OLattice<FVec> &>(rhs.expression().right());
+
+        if (s.hasOrderedRep())
+        {
+            int totalSize = s.end() - s.start() + 1;
+
+            ordered_fused_spin_recon_user_arg arg = {u, a, d, s.start(), inlineAddSpinReconDir3MinusFull};
+
+            dispatch_to_threads(totalSize, arg, ordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int site = s.start(); site <= s.end(); site++) {
+    FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir3MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				   (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				   1);
+    
+				   } */
+        }
+        else
+        {
+            const int *tab = s.siteTable().slice();
+
+            int totalSize = s.numSiteTable();
+
+            unordered_fused_spin_recon_user_arg arg = {u, a, d, tab, inlineAddSpinReconDir3MinusFull};
+
+            dispatch_to_threads(totalSize, arg, unordered_fused_spin_recon_evaluate_function);
+
+            ///////////////////
+            // Original code
+            ////////////////////
+            /*
+    for(int j=0; j < s.numSiteTable(); j++) { 
+      int site = tab[j];
+      
+      FVec tmp;
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(0), tmp.elem(0));
+      _inline_mult_su3_mat_vec(u.elem(site).elem(), a.elem(site).elem(1), tmp.elem(1));
+      
+      
+      inlineAddSpinReconDir3MinusFull( (REAL *)&(tmp.elem(0).elem(0).real()),
+				   (REAL *)&(d.elem(site).elem(0).elem(0).real()),
+				   1);
+
+				   }*/
+        }
+    }
 
 } // namespace QDP;
-
-
-
-
 
 #endif

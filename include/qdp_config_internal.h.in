@@ -60,6 +60,9 @@
 /* Enable memory debugging */
 #undef QDP_DEBUG_MEMORY
 
+/* Feynman--Hellmann Parameter */
+#undef QDP_FH_LAMBDA
+
 /* Number of color components */
 #undef QDP_NC
 

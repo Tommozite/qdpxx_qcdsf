@@ -3,115 +3,114 @@
 
 #include <stdio.h>
 
-namespace QDP {
-typedef PSpinVector<PColorVector<RComplex<REAL>, 3>, 4> Spin4;
-typedef PSpinVector<PColorVector<RComplex<REAL>, 3>, 2> Spin2;
-
-//-------------------------
-// Proj Dir=0 Minus
-//-------------------------
-template<>
-struct  UnaryReturn<Spin4, FnSpinProjectDir0Minus> {
- typedef Spin2 Type_t;
-};
-
-template<>
-inline UnaryReturn<Spin4, FnSpinProjectDir0Minus>::Type_t
-spinProjectDir0Minus(const Spin4& s1)
+namespace QDP
 {
-  UnaryReturn<Spin4, FnSpinProjectDir0Minus>::Type_t  d;
+    typedef PSpinVector<PColorVector<RComplex<REAL>, 3>, 4> Spin4;
+    typedef PSpinVector<PColorVector<RComplex<REAL>, 3>, 2> Spin2;
 
-  inlineSpinProjDir0Minus(&(s1.elem(0).elem(0).real()),
-			  &(d.elem(0).elem(0).real()),
-			  1);
-			   
-  
-  return d;
-}
+    //-------------------------
+    // Proj Dir=0 Minus
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir0Minus>
+    {
+        typedef Spin2 Type_t;
+    };
 
-//-------------------------
-// Proj Dir=0 Plus
-//-------------------------
-template<>
-struct  UnaryReturn<Spin4, FnSpinProjectDir0Plus> {
- typedef Spin2 Type_t;
-};
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir0Minus>::Type_t
+    spinProjectDir0Minus(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir0Minus>::Type_t d;
 
-template<>
-inline UnaryReturn<Spin4, FnSpinProjectDir0Plus>::Type_t
-spinProjectDir0Plus(const Spin4& s1)
-{
-  UnaryReturn<Spin4, FnSpinProjectDir0Plus>::Type_t  d;
+        inlineSpinProjDir0Minus(&(s1.elem(0).elem(0).real()),
+                                &(d.elem(0).elem(0).real()),
+                                1);
 
- 
-  inlineSpinProjDir0Plus(&(s1.elem(0).elem(0).real()),
-			  &(d.elem(0).elem(0).real()),
-			  1);
-			   
- 
-  
-  return d;
-}
+        return d;
+    }
 
-//-------------------------
-// Proj Dir=1 Minus
-//-------------------------
-template<>
-struct  UnaryReturn<Spin4, FnSpinProjectDir1Minus> {
- typedef Spin2 Type_t;
-};
+    //-------------------------
+    // Proj Dir=0 Plus
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir0Plus>
+    {
+        typedef Spin2 Type_t;
+    };
 
-template<>
-inline UnaryReturn<Spin4, FnSpinProjectDir1Minus>::Type_t
-spinProjectDir1Minus(const Spin4& s1)
-{
-  UnaryReturn<Spin4, FnSpinProjectDir1Minus>::Type_t  d;
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir0Plus>::Type_t
+    spinProjectDir0Plus(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir0Plus>::Type_t d;
 
-  inlineSpinProjDir1Minus(&(s1.elem(0).elem(0).real()),
-			 &(d.elem(0).elem(0).real()),
-			 1);
+        inlineSpinProjDir0Plus(&(s1.elem(0).elem(0).real()),
+                               &(d.elem(0).elem(0).real()),
+                               1);
 
-  
-  return d;
-}
+        return d;
+    }
 
+    //-------------------------
+    // Proj Dir=1 Minus
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir1Minus>
+    {
+        typedef Spin2 Type_t;
+    };
 
-//-------------------------
-// Proj Dir=1 Plus
-//-------------------------
-template<>
-struct  UnaryReturn<Spin4, FnSpinProjectDir1Plus> {
- typedef Spin2 Type_t;
-};
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir1Minus>::Type_t
+    spinProjectDir1Minus(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir1Minus>::Type_t d;
 
-template<>
-inline UnaryReturn<Spin4, FnSpinProjectDir1Plus>::Type_t
-spinProjectDir1Plus(const Spin4& s1)
-{
-  UnaryReturn<Spin4, FnSpinProjectDir1Plus>::Type_t  d;
+        inlineSpinProjDir1Minus(&(s1.elem(0).elem(0).real()),
+                                &(d.elem(0).elem(0).real()),
+                                1);
 
-  inlineSpinProjDir1Plus(&(s1.elem(0).elem(0).real()),
-			 &(d.elem(0).elem(0).real()),
-			 1);
-  return d;
-}
+        return d;
+    }
 
+    //-------------------------
+    // Proj Dir=1 Plus
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir1Plus>
+    {
+        typedef Spin2 Type_t;
+    };
 
-//-------------------------
-// Proj Dir=2 Minus
-//-------------------------
-template<>
-struct  UnaryReturn<Spin4, FnSpinProjectDir2Minus> {
- typedef Spin2 Type_t;
-};
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir1Plus>::Type_t
+    spinProjectDir1Plus(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir1Plus>::Type_t d;
 
-template<>
-inline UnaryReturn<Spin4, FnSpinProjectDir2Minus>::Type_t
-spinProjectDir2Minus(const Spin4& s1)
-{
-  UnaryReturn<Spin4, FnSpinProjectDir2Minus>::Type_t  d;
+        inlineSpinProjDir1Plus(&(s1.elem(0).elem(0).real()),
+                               &(d.elem(0).elem(0).real()),
+                               1);
+        return d;
+    }
 
-  /* 1 - \gamma_2 =  1  0  -i  0 
+    //-------------------------
+    // Proj Dir=2 Minus
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir2Minus>
+    {
+        typedef Spin2 Type_t;
+    };
+
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir2Minus>::Type_t
+    spinProjectDir2Minus(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir2Minus>::Type_t d;
+
+        /* 1 - \gamma_2 =  1  0  -i  0 
                      0  1  0  +i
                     +i  0  1   0
                      0 -i  0   1 
@@ -120,81 +119,78 @@ spinProjectDir2Minus(const Spin4& s1)
    *      ( b0r + i b0i )  =  ( {a0r + a2i} + i{a0i - a2r} )
    *      ( b1r + i b1i )     ( {a1r - a3i} + i{a1i + a3r} )
    */
-  inlineSpinProjDir2Minus(&(s1.elem(0).elem(0).real()),
-			  &(d.elem(0).elem(0).real()),
-			  1);
-			  
-  
-  return d;
-}
+        inlineSpinProjDir2Minus(&(s1.elem(0).elem(0).real()),
+                                &(d.elem(0).elem(0).real()),
+                                1);
 
+        return d;
+    }
 
-//-------------------------
-// Proj Dir=2 Plus
-//-------------------------
-template<>
-struct  UnaryReturn<Spin4, FnSpinProjectDir2Plus> {
- typedef Spin2  Type_t;
-};
+    //-------------------------
+    // Proj Dir=2 Plus
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir2Plus>
+    {
+        typedef Spin2 Type_t;
+    };
 
-template<>
-inline UnaryReturn<Spin4, FnSpinProjectDir2Plus>::Type_t
-spinProjectDir2Plus(const Spin4& s1)
-{
-  UnaryReturn<Spin4, FnSpinProjectDir2Plus>::Type_t  d;
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir2Plus>::Type_t
+    spinProjectDir2Plus(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir2Plus>::Type_t d;
 
+        inlineSpinProjDir2Plus(&(s1.elem(0).elem(0).real()),
+                               &(d.elem(0).elem(0).real()),
+                               1);
 
-  inlineSpinProjDir2Plus(&(s1.elem(0).elem(0).real()),
-			  &(d.elem(0).elem(0).real()),
-			  1);
+        return d;
+    }
 
-  
-  return d;
-}
+    //-------------------------
+    // Proj Dir=3 Minus
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir3Minus>
+    {
+        typedef Spin2 Type_t;
+    };
 
-//-------------------------
-// Proj Dir=3 Minus
-//-------------------------
-template<>
-struct  UnaryReturn<Spin4, FnSpinProjectDir3Minus> {
- typedef Spin2  Type_t;
-};
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir3Minus>::Type_t
+    spinProjectDir3Minus(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir3Minus>::Type_t d;
 
+        inlineSpinProjDir3Minus(&(s1.elem(0).elem(0).real()),
+                                &(d.elem(0).elem(0).real()),
+                                1);
 
-template<>
-inline UnaryReturn<Spin4, FnSpinProjectDir3Minus>::Type_t
-spinProjectDir3Minus(const Spin4& s1)
-{
-  UnaryReturn<Spin4, FnSpinProjectDir3Minus>::Type_t  d;
+        return d;
+    }
 
-  inlineSpinProjDir3Minus(&(s1.elem(0).elem(0).real()),
-			  &(d.elem(0).elem(0).real()),
-			  1);
-  
-  return d;
-}
+    //-------------------------
+    // Proj Dir=3 Plus
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir3Plus>
+    {
+        typedef Spin2 Type_t;
+    };
 
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir3Plus>::Type_t
+    spinProjectDir3Plus(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir3Plus>::Type_t d;
 
-//-------------------------
-// Proj Dir=3 Plus
-//-------------------------
-template<>
-struct  UnaryReturn<Spin4, FnSpinProjectDir3Plus> {
- typedef Spin2  Type_t;
-};
+        inlineSpinProjDir3Plus(&(s1.elem(0).elem(0).real()),
+                               &(d.elem(0).elem(0).real()),
+                               1);
 
-template<>
-inline UnaryReturn<Spin4, FnSpinProjectDir3Plus>::Type_t
-spinProjectDir3Plus(const Spin4& s1)
-{
-  UnaryReturn<Spin4, FnSpinProjectDir3Plus>::Type_t  d;
-
-  inlineSpinProjDir3Plus(&(s1.elem(0).elem(0).real()),
-			  &(d.elem(0).elem(0).real()),
-			  1);
-  
-  return d;
-}
+        return d;
+    }
 
 #if 0
 template<>
@@ -495,6 +491,422 @@ spinReconstructDir3Plus(const Spin2& s1)
     d.elem(3).elem(col).imag() =  s1.elem(1).elem(col).imag();
   }
  
+
+  return d;
+}
+
+#endif
+
+    //-------------------------
+    // Proj Dir=0 MinusFull
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir0MinusFull>
+    {
+        typedef Spin4 Type_t;
+    };
+
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir0MinusFull>::Type_t
+    spinProjectDir0MinusFull(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir0MinusFull>::Type_t d;
+
+        inlineSpinProjDir0MinusFull(&(s1.elem(0).elem(0).real()),
+                                    &(d.elem(0).elem(0).real()),
+                                    1);
+
+        return d;
+    }
+
+    //-------------------------
+    // Proj Dir=0 PlusFull
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir0PlusFull>
+    {
+        typedef Spin4 Type_t;
+    };
+
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir0PlusFull>::Type_t
+    spinProjectDir0PlusFull(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir0PlusFull>::Type_t d;
+
+        inlineSpinProjDir0PlusFull(&(s1.elem(0).elem(0).real()),
+                                   &(d.elem(0).elem(0).real()),
+                                   1);
+
+        return d;
+    }
+
+    //-------------------------
+    // Proj Dir=1 MinusFull
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir1MinusFull>
+    {
+        typedef Spin4 Type_t;
+    };
+
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir1MinusFull>::Type_t
+    spinProjectDir1MinusFull(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir1MinusFull>::Type_t d;
+
+        inlineSpinProjDir1MinusFull(&(s1.elem(0).elem(0).real()),
+                                    &(d.elem(0).elem(0).real()),
+                                    1);
+
+        return d;
+    }
+
+    //-------------------------
+    // Proj Dir=1 PlusFull
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir1PlusFull>
+    {
+        typedef Spin4 Type_t;
+    };
+
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir1PlusFull>::Type_t
+    spinProjectDir1PlusFull(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir1PlusFull>::Type_t d;
+
+        inlineSpinProjDir1PlusFull(&(s1.elem(0).elem(0).real()),
+                                   &(d.elem(0).elem(0).real()),
+                                   1);
+        return d;
+    }
+
+    //-------------------------
+    // Proj Dir=2 MinusFull
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir2MinusFull>
+    {
+        typedef Spin4 Type_t;
+    };
+
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir2MinusFull>::Type_t
+    spinProjectDir2MinusFull(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir2MinusFull>::Type_t d;
+
+        inlineSpinProjDir2MinusFull(&(s1.elem(0).elem(0).real()),
+                                    &(d.elem(0).elem(0).real()),
+                                    1);
+
+        return d;
+    }
+
+    //-------------------------
+    // Proj Dir=2 PlusFull
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir2PlusFull>
+    {
+        typedef Spin4 Type_t;
+    };
+
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir2PlusFull>::Type_t
+    spinProjectDir2PlusFull(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir2PlusFull>::Type_t d;
+
+        inlineSpinProjDir2PlusFull(&(s1.elem(0).elem(0).real()),
+                                   &(d.elem(0).elem(0).real()),
+                                   1);
+
+        return d;
+    }
+
+    //-------------------------
+    // Proj Dir=3 MinusFull
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir3MinusFull>
+    {
+        typedef Spin4 Type_t;
+    };
+
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir3MinusFull>::Type_t
+    spinProjectDir3MinusFull(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir3MinusFull>::Type_t d;
+
+        inlineSpinProjDir3MinusFull(&(s1.elem(0).elem(0).real()),
+                                    &(d.elem(0).elem(0).real()),
+                                    1);
+
+        return d;
+    }
+
+    //-------------------------
+    // Proj Dir=3 PlusFull
+    //-------------------------
+    template <>
+    struct UnaryReturn<Spin4, FnSpinProjectDir3PlusFull>
+    {
+        typedef Spin4 Type_t;
+    };
+
+    template <>
+    inline UnaryReturn<Spin4, FnSpinProjectDir3PlusFull>::Type_t
+    spinProjectDir3PlusFull(const Spin4 &s1)
+    {
+        UnaryReturn<Spin4, FnSpinProjectDir3PlusFull>::Type_t d;
+
+        inlineSpinProjDir3PlusFull(&(s1.elem(0).elem(0).real()),
+                                   &(d.elem(0).elem(0).real()),
+                                   1);
+
+        return d;
+    }
+
+#if 0
+template<>
+inline UnaryReturn<Spin4, FnSpinReconstructDir0MinusFull>::Type_t
+spinReconstructDir0MinusFull(const Spin4& s1)
+{
+  UnaryReturn<Spin4, FnSpinReconstructDir0MinusFull>::Type_t  d;
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(0).elem(col).real() = s1.elem(0).elem(col).real();
+    d.elem(0).elem(col).imag() = s1.elem(0).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(1).elem(col).real() = s1.elem(1).elem(col).real();
+    d.elem(1).elem(col).imag() = s1.elem(1).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(2).elem(col).real() = s1.elem(2).elem(col).real();
+    d.elem(2).elem(col).imag() = s1.elem(2).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(3).elem(col).real() = s1.elem(3).elem(col).real();
+    d.elem(3).elem(col).imag() = s1.elem(3).elem(col).imag();
+  }
+
+  return d;
+}
+
+template<>
+inline UnaryReturn<Spin4, FnSpinReconstructDir0PlusFull>::Type_t
+spinReconstructDir0PlusFull(const Spin4& s1)
+{
+  UnaryReturn<Spin4, FnSpinReconstructDir0PlusFull>::Type_t  d;
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(0).elem(col).real() = s1.elem(0).elem(col).real();
+    d.elem(0).elem(col).imag() = s1.elem(0).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(1).elem(col).real() = s1.elem(1).elem(col).real();
+    d.elem(1).elem(col).imag() = s1.elem(1).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(2).elem(col).real() = s1.elem(2).elem(col).real();
+    d.elem(2).elem(col).imag() = s1.elem(2).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(3).elem(col).real() = s1.elem(3).elem(col).real();
+    d.elem(3).elem(col).imag() = s1.elem(3).elem(col).imag();
+  }
+
+  return d;
+}
+
+
+
+template<>
+inline UnaryReturn<Spin4, FnSpinReconstructDir1MinusFull>::Type_t
+spinReconstructDir1MinusFull(const Spin4& s1)
+{
+  UnaryReturn<Spin4, FnSpinReconstructDir1MinusFull>::Type_t  d;
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(0).elem(col).real() = s1.elem(0).elem(col).real();
+    d.elem(0).elem(col).imag() = s1.elem(0).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(1).elem(col).real() = s1.elem(1).elem(col).real();
+    d.elem(1).elem(col).imag() = s1.elem(1).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(2).elem(col).real() = s1.elem(2).elem(col).real();
+    d.elem(2).elem(col).imag() = s1.elem(2).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(3).elem(col).real() = s1.elem(3).elem(col).real();
+    d.elem(3).elem(col).imag() = s1.elem(3).elem(col).imag();
+  }
+
+  return d;
+}
+
+template<>
+inline UnaryReturn<Spin4, FnSpinReconstructDir1PlusFull>::Type_t
+spinReconstructDir1PlusFull(const Spin4& s1)
+{
+  UnaryReturn<Spin4, FnSpinReconstructDir1PlusFull>::Type_t  d;
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(0).elem(col).real() = s1.elem(0).elem(col).real();
+    d.elem(0).elem(col).imag() = s1.elem(0).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(1).elem(col).real() = s1.elem(1).elem(col).real();
+    d.elem(1).elem(col).imag() = s1.elem(1).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(2).elem(col).real() = s1.elem(2).elem(col).real();
+    d.elem(2).elem(col).imag() = s1.elem(2).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(3).elem(col).real() = s1.elem(3).elem(col).real();
+    d.elem(3).elem(col).imag() = s1.elem(3).elem(col).imag();
+  }
+ 
+
+  return d;
+}
+
+
+template<>
+inline UnaryReturn<Spin4, FnSpinReconstructDir2MinusFull>::Type_t
+spinReconstructDir2MinusFull(const Spin4& s1)
+{
+  UnaryReturn<Spin4, FnSpinReconstructDir2MinusFull>::Type_t  d;
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(0).elem(col).real() = s1.elem(0).elem(col).real();
+    d.elem(0).elem(col).imag() = s1.elem(0).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(1).elem(col).real() = s1.elem(1).elem(col).real();
+    d.elem(1).elem(col).imag() = s1.elem(1).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(2).elem(col).real() = s1.elem(2).elem(col).real();
+    d.elem(2).elem(col).imag() = s1.elem(2).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(3).elem(col).real() = s1.elem(3).elem(col).real();
+    d.elem(3).elem(col).imag() = s1.elem(3).elem(col).imag();
+  }
+
+  return d;
+}
+
+template<>
+inline UnaryReturn<Spin4, FnSpinReconstructDir2PlusFull>::Type_t
+spinReconstructDir2PlusFull(const Spin4& s1)
+{
+  UnaryReturn<Spin4, FnSpinReconstructDir2PlusFull>::Type_t  d;
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(0).elem(col).real() = s1.elem(0).elem(col).real();
+    d.elem(0).elem(col).imag() = s1.elem(0).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(1).elem(col).real() = s1.elem(1).elem(col).real();
+    d.elem(1).elem(col).imag() = s1.elem(1).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(2).elem(col).real() = s1.elem(2).elem(col).real();
+    d.elem(2).elem(col).imag() = s1.elem(2).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(3).elem(col).real() = s1.elem(3).elem(col).real();
+    d.elem(3).elem(col).imag() = s1.elem(3).elem(col).imag();
+  }
+
+  return d;
+}
+
+
+template<>
+inline UnaryReturn<Spin4, FnSpinReconstructDir3MinusFull>::Type_t
+spinReconstructDir3MinusFull(const Spin4& s1)
+{
+  UnaryReturn<Spin4, FnSpinReconstructDir3MinusFull>::Type_t  d;
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(0).elem(col).real() = s1.elem(0).elem(col).real();
+    d.elem(0).elem(col).imag() = s1.elem(0).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(1).elem(col).real() = s1.elem(1).elem(col).real();
+    d.elem(1).elem(col).imag() = s1.elem(1).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(2).elem(col).real() = s1.elem(2).elem(col).real();
+    d.elem(2).elem(col).imag() = s1.elem(2).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(3).elem(col).real() = s1.elem(3).elem(col).real();
+    d.elem(3).elem(col).imag() = s1.elem(3).elem(col).imag();
+  }
+
+  return d;
+}
+
+template<>
+inline UnaryReturn<Spin4, FnSpinReconstructDir3PlusFull>::Type_t
+spinReconstructDir3PlusFull(const Spin4& s1)
+{
+  UnaryReturn<Spin4, FnSpinReconstructDir3PlusFull>::Type_t  d;
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(0).elem(col).real() = s1.elem(0).elem(col).real();
+    d.elem(0).elem(col).imag() = s1.elem(0).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(1).elem(col).real() = s1.elem(1).elem(col).real();
+    d.elem(1).elem(col).imag() = s1.elem(1).elem(col).imag();
+  }
+
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(2).elem(col).real() = s1.elem(2).elem(col).real();
+    d.elem(2).elem(col).imag() = s1.elem(2).elem(col).imag();
+  }
+
+  for(int col=0; col < 3; col++) { 
+    d.elem(3).elem(col).real() = s1.elem(3).elem(col).real();
+    d.elem(3).elem(col).imag() = s1.elem(3).elem(col).imag();
+  }
 
   return d;
 }

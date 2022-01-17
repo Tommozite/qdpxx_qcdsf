@@ -47,6 +47,20 @@ AC_SUBST(CONFIG_NC, [${ac_Nc}] )
 dnl Tell the user about Nc
 AC_MSG_NOTICE([Configuring QDP++ for Nc = ${ac_Nc}])
 
+dnl --enable-lambda
+AC_ARG_ENABLE(lambda,
+  AC_HELP_STRING([--enable-lambda=N ],
+    [Set the Feynman--Hellmann modification parameter, default is 0]),
+  [ac_lambda=${enableval}],
+  [ac_lambda=0]
+)
+
+AC_DEFINE_UNQUOTED(QDP_FH_LAMBDA, ${ac_lambda}, [Feynman--Hellmann Parameter])
+AC_SUBST(CONFIG_LAMBDA, [${ac_lambda}] )
+
+dnl Tell the user about Lambda
+AC_MSG_NOTICE([Configuring QDP++ for lambda = ${ac_lambda}])
+
 
 dnl --enable-Ns
 AC_ARG_ENABLE(Ns,

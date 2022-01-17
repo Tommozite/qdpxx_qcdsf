@@ -285,6 +285,165 @@ unaryOps
   @ingroup group1
   @relates QDPType */"
 -----
+  TAG = "FnSpinProjectDir0PlusFull"
+  FUNCTION = "spinProjectDir0PlusFull"
+  EXPR = "return (spinProjectDir0PlusFull(a));"
+  COMMENTA = "//! Spin projection in direction 0"
+  COMMENTB = "/*! Returns half-spin vector from a full spin vector source
+  @param l  full spin vector
+  @return (1 + gamma[0])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinProjectDir1PlusFull"
+  FUNCTION = "spinProjectDir1PlusFull"
+  EXPR = "return (spinProjectDir1PlusFull(a));"
+  COMMENTA = "//! Spin projection in direction 1"
+  COMMENTB = "/*! Returns half-spin vector from a full spin vector source
+  @param l  full spin vector
+  @return (1 + gamma[1])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinProjectDir2PlusFull"
+  FUNCTION = "spinProjectDir2PlusFull"
+  EXPR = "return (spinProjectDir2PlusFull(a));"
+  COMMENTA = "//! Spin projection in direction 2"
+  COMMENTB = "/*! Returns half-spin vector from a full spin vector source
+  @param l  full spin vector
+  @return (1 + gamma[2])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinProjectDir3PlusFull"
+  FUNCTION = "spinProjectDir3PlusFull"
+  EXPR = "return (spinProjectDir3PlusFull(a));"
+  COMMENTA = "//! Spin projection in direction 3"
+  COMMENTB = "/*! Returns half-spin vector from a full spin vector source
+  @param l  full spin vector
+  @return (1 + gamma[3])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinProjectDir0MinusFull"
+  FUNCTION = "spinProjectDir0MinusFull"
+  EXPR = "return (spinProjectDir0MinusFull(a));"
+  COMMENTA = "//! Spin projection in direction 0"
+  COMMENTB = "/*! Returns half-spin vector from a full spin vector source
+  @param l  full spin vector
+  @return (1 - gamma[0])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinProjectDir1MinusFull"
+  FUNCTION = "spinProjectDir1MinusFull"
+  EXPR = "return (spinProjectDir1MinusFull(a));"
+  COMMENTA = "//! Spin projection in direction 1"
+  COMMENTB = "/*! Returns half-spin vector from a full spin vector source
+  @param l  full spin vector
+  @return (1 - gamma[1])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinProjectDir2MinusFull"
+  FUNCTION = "spinProjectDir2MinusFull"
+  EXPR = "return (spinProjectDir2MinusFull(a));"
+  COMMENTA = "//! Spin projection in direction 2"
+  COMMENTB = "/*! Returns half-spin vector from a full spin vector source
+  @param l  full spin vector
+  @return (1 - gamma[2])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinProjectDir3MinusFull"
+  FUNCTION = "spinProjectDir3MinusFull"
+  EXPR = "return (spinProjectDir3MinusFull(a));"
+  COMMENTA = "//! Spin projection in direction 3"
+  COMMENTB = "/*! Returns half-spin vector from a full spin vector source
+  @param l  full spin vector
+  @return (1 - gamma[3])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinReconstructDir0PlusFull"
+  FUNCTION = "spinReconstructDir0PlusFull"
+  EXPR = "return (spinReconstructDir0PlusFull(a));"
+  COMMENTA = "//! Spin reconstruct in direction 3"
+  COMMENTB = "/*! Returns full spin vector from a half spin vector source
+  @param l  half-spin vector
+  @return (1 + gamma[0])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinReconstructDir1PlusFull"
+  FUNCTION = "spinReconstructDir1PlusFull"
+  EXPR = "return (spinReconstructDir1PlusFull(a));"
+  COMMENTA = "//! Spin reconstruct in direction 1"
+  COMMENTB = "/*! Returns full-spin vector from a half-spin vector source
+  @param l  half-spin vector
+  @return (1 + gamma[1])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinReconstructDir2PlusFull"
+  FUNCTION = "spinReconstructDir2PlusFull"
+  EXPR = "return (spinReconstructDir2PlusFull(a));"
+  COMMENTA = "//! Spin reconstruct in direction 2"
+  COMMENTB = "/*! Returns full-spin vector from a half-spin vector source
+  @param l  half-spin vector
+  @return (1 + gamma[2])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinReconstructDir3PlusFull"
+  FUNCTION = "spinReconstructDir3PlusFull"
+  EXPR = "return (spinReconstructDir3PlusFull(a));"
+  COMMENTA = "//! Spin reconstruct in direction 3"
+  COMMENTB = "/*! Returns full-spin vector from a half-spin vector source
+  @param l  half-spin vector
+  @return (1 + gamma[3])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinReconstructDir0MinusFull"
+  FUNCTION = "spinReconstructDir0MinusFull"
+  EXPR = "return (spinReconstructDir0MinusFull(a));"
+  COMMENTA = "//! Spin reconstruct in direction 0"
+  COMMENTB = "/*! Returns full-spin vector from a half-spin vector source
+  @param l  half-spin vector
+  @return (1 - gamma[0])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinReconstructDir1MinusFull"
+  FUNCTION = "spinReconstructDir1MinusFull"
+  EXPR = "return (spinReconstructDir1MinusFull(a));"
+  COMMENTA = "//! Spin reconstruct in direction 1"
+  COMMENTB = "/*! Returns full-spin vector from a half-spin vector source
+  @param l  half-spin vector
+  @return (1 - gamma[1])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinReconstructDir2MinusFull"
+  FUNCTION = "spinReconstructDir2MinusFull"
+  EXPR = "return (spinReconstructDir2MinusFull(a));"
+  COMMENTA = "//! Spin reconstruct in direction 2"
+  COMMENTB = "/*! Returns full-spin vector from a half-spin vector source
+  @param l  half-spin vector
+  @return (1 - gamma[2])*l
+  @ingroup group1
+  @relates QDPType */"
+-----
+  TAG = "FnSpinReconstructDir3MinusFull"
+  FUNCTION = "spinReconstructDir3MinusFull"
+  EXPR = "return (spinReconstructDir3MinusFull(a));"
+  COMMENTA = "//! Spin reconstruct in direction 3"
+  COMMENTB = "/*! Returns full-spin vector from a half-spin vector source
+  @param l  half-spin vector
+  @return (1 - gamma[3])*l
+  @ingroup group1
+  @relates QDPType */"-----
   TAG = "FnChiralProjectPlus"
   FUNCTION = "chiralProjectPlus"
   EXPR = "return (chiralProjectPlus(a));"

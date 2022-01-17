@@ -63,6 +63,7 @@ Options:
   [--Nd]
   [--Nc]
   [--Ns]
+  [--lambda]
   [--parallel-arch]
   [--qmp-home]
   [--db-enabled]
@@ -124,6 +125,9 @@ while test $# -gt 0; do
 
     --Ns)
       echo @CONFIG_NS@
+      ;;
+    --lambda)
+      echo @CONFIG_LAMBDA@
       ;;
 
     --parallel-arch)
